@@ -23,11 +23,7 @@ class FlaskAppTestCase(unittest.TestCase):
             conn.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)')
             conn.commit()
         print('setUp Testcase Done')
-    def tearDown(self):
-        os.close(self.db_fd)
-        os.unlink(app.config['DATABASE'])
-        print('tearDown Testcase Done')
-
+    
     def test_register_post(self):
         unique_username = f"testuser_{uuid.uuid4()}"
         response = self.app.post('/register', data={'username': unique_username, 'password': 'testpass'}, follow_redirects=True)
@@ -47,6 +43,9 @@ class FlaskAppTestCase(unittest.TestCase):
         self.assertIsNotNone(user, "User was not added to the database")
         self.assertEqual(user['username'], unique_username)
         print('test_register_post Testcase Done')
-
+    def tearDown(self):
+        os.close(self.db_fd)
+        os.unlink(app.config['DATABASE'])
+        print('tearDown Testcase Done')
 if __name__ == '__main__':
     unittest.main()
